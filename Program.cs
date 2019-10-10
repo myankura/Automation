@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
@@ -21,7 +21,7 @@ namespace HPABot
             driver.Manage().Window.Maximize();
 
             //Step 1 - Click on Step 1 and then accept the alert
-            driver.FindElement(By.Id("BoxHeader1")).Click();
+            driver.FindElement(By.Id("Box1")).Click();
             var alert = driver.SwitchTo().Alert();
             alert.Accept();
 
@@ -42,7 +42,8 @@ namespace HPABot
             oSelect.SelectByValue($"{getDropdownVal}");
             alert.Accept();
 
-            //Step 5 - Grab all of the placeholder text. Take that text and then enter it in the respective textbox, then submit form and capture the result
+            //Step 5 - Grab all of the placeholder text from each element. Take that text and enter it in the respective textbox then submit form and capture the result
+
             List<IWebElement> dateTextBoxes = driver.FindElements(By.Id("formDate")).ToList();
             foreach (var date in dateTextBoxes)
             {
@@ -75,16 +76,18 @@ namespace HPABot
             getSubmitButton.Click();
             alert.Accept();
 
-            //Step 6
+            //Step 6 - Capture the result from step 5. Find the requested line number to insert the result into. 
             var captureResult = driver.FindElement(By.Id("formResult")).Text;
             var getLineNumVal = driver.FindElement(By.Id("lineNum")).Text;
 
+            //Find the requested element by id. Clear the element. Insert the result in desired element. Hit enter and then accept the alert
             var insertRow = driver.FindElement(By.XPath($"//*[@id='inputTable']/tbody/tr[{getLineNumVal}]/td[2]/input"));
             insertRow.Clear();
             insertRow.SendKeys($"{captureResult}");
             insertRow.SendKeys(Keys.Enter);
             alert.Accept();
 
+            //Steps 7 - 10 - Click each element, wait for the delay, then accept the alert
             //Handle whether alert is present
             bool IsAlertShown(IWebDriver drv)
             {
@@ -98,34 +101,28 @@ namespace HPABot
                 }
                 return true;
             }
+            
+            //Build a list to hold the desired boxes numbers
+            List<int> nums = new List<int>()
+            {
+                7, 8, 9, 10
+            };
 
-            //Step 7 - Click on the box and wait for delay. Then accept the alert. These last four blocks need to be refactored into a loop
-            IWebElement boxSeven = driver.FindElement(By.Id("BoxParagraph7"));
-            boxSeven.Click();
-            var awaitStepSeven = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            awaitStepSeven.Until(drv => IsAlertShown(drv));
-            alert.Accept();
+            //Run through a foreach for each number that is in the list
+            foreach(var num in nums)
+            {
+                //Find each element by id ex. Box7, Box8, Box9, Box10
+                var boxes = driver.FindElements(By.Id($"Box{num}"));
 
-            //Step 8
-            IWebElement boxEight = driver.FindElement(By.Id("BoxParagraph8"));
-            boxEight.Click();
-            var awaitStepEight = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            awaitStepEight.Until(drv => IsAlertShown(drv));
-            alert.Accept();
-
-            //Step 9
-            IWebElement boxNine = driver.FindElement(By.Id("BoxParagraph9"));
-            boxNine.Click();
-            var awaitStepNine = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            awaitStepNine.Until(drv => IsAlertShown(drv));
-            alert.Accept();
-
-            //Step 10
-            IWebElement boxTen = driver.FindElement(By.Id("BoxParagraph10"));
-            boxTen.Click();
-            var awaitStepTen = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            awaitStepTen.Until(drv => IsAlertShown(drv));
-            alert.Accept();
+                //Run through another foreach loop to click on each element, await the delay, then accept the alert
+                foreach (var box in boxes)
+                {
+                    box.Click();
+                    var awaitAlert = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                    awaitAlert.Until(drv => IsAlertShown(drv));
+                    alert.Accept();
+                }
+            }
         }
     }
 }
