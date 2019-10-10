@@ -30,19 +30,19 @@ namespace HPABot
             driver.FindElement(By.Id("Box3")).SendKeys(Keys.Tab);
             alert.Accept();
 
-            //Step 3 - Determine which radio button is being asked to be clicked, then click the requested radio button, accept the alert
+            //Step 3 - Determine which radio button is being requested, then click the requested radio button, accept the alert
             var getRadioVal = driver.FindElement(By.Id("optionVal")).Text;
             IWebElement radioButton = driver.FindElement(By.XPath($"//*[@type='radio'][{getRadioVal}]"));
             radioButton.Click();
             alert.Accept();
 
-            //Step 4 - Determine which drop down option is be requested. Click the desired dropdown option, and then accept the alert
+            //Step 4 - Determine which drop down option is being requested. Click the desired dropdown option, and then accept the alert
             var getDropdownVal = driver.FindElement(By.Id("selectionVal")).Text;
             SelectElement oSelect = new SelectElement(driver.FindElement(By.TagName("select")));
             oSelect.SelectByValue($"{getDropdownVal}");
             alert.Accept();
 
-            //Step 5 - Grab all of the placeholder text. Take that text and then enter it in the respective textbox then submit form and capture the result
+            //Step 5 - Grab all of the placeholder text. Take that text and then enter it in the respective textbox, then submit form and capture the result
             List<IWebElement> dateTextBoxes = driver.FindElements(By.Id("formDate")).ToList();
             foreach (var date in dateTextBoxes)
             {
