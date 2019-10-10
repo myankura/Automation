@@ -102,7 +102,7 @@ namespace HPABot
                 return true;
             }
             
-            //Build a list to hold the desired boxes numbers
+            //Build a list to hold the desired box numbers
             List<int> nums = new List<int>()
             {
                 7, 8, 9, 10
